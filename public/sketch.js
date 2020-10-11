@@ -5,27 +5,31 @@ function setup() {
   background("black");
   socket = io.connect("http://localhost:3000");
 
-  socket.on("mouse", newDrawing);
+  // when mouse event is received
+  socket.on("mouse", receivedDrawing);
 }
 
-function newDrawing(data) {
+function receivedDrawing(receivedMousePosition) {
+  drawLine(receivedMousePosition.x, receivedMousePosition.y);
+}
+
+function drawLine(x, y) {
   noStroke();
   fill(255);
-  ellipse(data.x, data.y, 36, 36);
+  ellipse(x, y, 36, 36);
 }
 
 function mouseDragged() {
   console.log("sending", mouseX, mouseY);
-  let data = {
+  let mousePosition = {
     x: mouseX,
     y: mouseY,
   };
 
-  socket.emit("mouse", data);
+  // send to server
+  socket.emit("mouse", mousePosition);
 
-  noStroke();
-  fill(255);
-  ellipse(mouseX, mouseY, 36, 36);
+  drawLine(mouseX, mouseY);
 }
 
 function draw() {}
