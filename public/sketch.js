@@ -2,26 +2,39 @@ let socket;
 
 function setup() {
   createCanvas(800, 500);
-  background("black");
+  background("grey");
   socket = io.connect("http://localhost:3000");
 
-  // when mouse event is received
+  // when shared mouse position is sended from server
   socket.on("mouse", receivedDrawing);
 }
 
-function receivedDrawing(receivedMousePosition) {
-  drawLine(receivedMousePosition.x, receivedMousePosition.y);
-}
-
-function drawLine(x, y) {
+function drawEllipse(x, y) {
   noStroke();
   fill(255);
   ellipse(x, y, 36, 36);
 }
 
+function drawLine(px, py, x, y) {
+  strokeWeight(4);
+  stroke("rgb(0,255,0)");
+  line(px, py, x, y);
+}
+
+function receivedDrawing(receivedMousePosition) {
+  drawLine(
+    receivedMousePosition.px,
+    receivedMousePosition.py,
+    receivedMousePosition.x,
+    receivedMousePosition.y
+  );
+}
+
 function mouseDragged() {
   console.log("sending", mouseX, mouseY);
   let mousePosition = {
+    px: pmouseX,
+    py: pmouseY,
     x: mouseX,
     y: mouseY,
   };
@@ -29,7 +42,10 @@ function mouseDragged() {
   // send to server
   socket.emit("mouse", mousePosition);
 
-  drawLine(mouseX, mouseY);
+  drawLine(
+    mousePosition.px,
+    mousePosition.py,
+    mousePosition.x,
+    mousePosition.y
+  );
 }
-
-function draw() {}

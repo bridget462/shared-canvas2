@@ -10,9 +10,10 @@ app.use(express.static("./public"));
 function newConnection(socket) {
   console.log("new connection", socket.id);
 
-  socket.on("mouse", mouseMsg);
+  // when client share mousePosition
+  socket.on("mouse", shareMousePosition);
 
-  function mouseMsg(mousePosition) {
+  function shareMousePosition(mousePosition) {
     socket.broadcast.emit("mouse", mousePosition);
     console.log(mousePosition);
   }
